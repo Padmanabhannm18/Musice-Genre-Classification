@@ -18,7 +18,7 @@ music_genre_classification/
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-username/music-genre-classification.git
+git clone https://github.com/Padmanabhannm18/music-genre-classification.git
 cd music-genre-classification
 ```
 
