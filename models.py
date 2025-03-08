@@ -1,44 +1,27 @@
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score
+import tensorflow as tf
+from tensorflow.keras import layers, models
 import numpy as np
-import pickle
 
-# Model performance storage
-model_performance = {}
+def build_cnn_model(input_shape=(128, 128, 1), num_classes=10):
+    """Builds a Convolutional Neural Network model."""
+    model = models.Sequential([
+        layers.Conv2D(32, (3, 3), activation="relu", input_shape=input_shape),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation="relu"),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(128, (3, 3), activation="relu"),
+        layers.MaxPooling2D((2, 2)),
+        layers.Flatten(),
+        layers.Dense(128, activation="relu"),
+        layers.Dropout(0.5),
+        layers.Dense(num_classes, activation="softmax")
+    ])
+    model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+    return model
 
-def train_models(training_features, training_labels, test_features, test_labels):
-    """Trains multiple models and stores their performance."""
-    global model_performance
-    models = {
-        "KNN": KNeighborsClassifier(n_neighbors=5),
-        "Random Forest": RandomForestClassifier(n_estimators=300),
-        "SVM": SVC(kernel='linear', probability=True),
-        "Logistic Regression": LogisticRegression(max_iter=1000),
-        "Decision Tree": DecisionTreeClassifier(),
-        "Gradient Boosting": GradientBoostingClassifier(n_estimators=300),
-        "Naive Bayes": GaussianNB(),
-        "MLP (Neural Network)": MLPClassifier(hidden_layer_sizes=(300,), max_iter=500)
-    }
-    
-    for name, model in models.items():
-        model.fit(training_features, training_labels)
-        predictions = model.predict(test_features)
-        accuracy = accuracy_score(test_labels, predictions) * 100
-        model_performance[name] = (model, accuracy)
-
-def predict_genre(audio_path, best_model):
-    """Predicts the genre of an uploaded song using the best model."""
-    from utils import extract_features
-    feature = extract_features(audio_path)
-    return best_model.predict([feature])[0]
-
-def get_best_model():
-    """Returns the best performing model."""
-    best_model_name = max(model_performance, key=lambda name: model_performance[name][1])
-    return best_model_name, model_performance[best_model_name]
+def train_model(x_train, y_train, x_val, y_val, epochs=20, batch_size=32):
+    """Trains the CNN model."""
+    model = build_cnn_model()
+    history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=epochs, batch_size=batch_size)
+    model.save("genre_classification_model.h5")
+    return model, history
