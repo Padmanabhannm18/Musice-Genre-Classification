@@ -1,9 +1,9 @@
-import scipy.io.wavfile as wav
-from python_speech_features import mfcc
+import librosa
 import numpy as np
 
-def extract_features(audio_path):
-    """Extracts MFCC features from an audio file."""
-    rate, sig = wav.read(audio_path)
-    mfcc_feat = mfcc(sig, rate, winlen=0.020, appendEnergy=False)
-    return mfcc_feat.mean(0)
+def extract_mel_spectrogram(audio_path, n_mels=128, n_fft=2048, hop_length=512):
+    """Extracts Mel Spectrogram features from an audio file."""
+    y, sr = librosa.load(audio_path, sr=22050)
+    mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length)
+    mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+    return mel_spec_db
