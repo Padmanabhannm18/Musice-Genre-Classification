@@ -5,6 +5,7 @@ from models import train_models, predict_genre, model_performance
 from utils import get_best_model, save_uploaded_file, GENRE_LABELS
 
 # Streamlit UI
+st.set_page_config(page_title="Music Genre Classification", layout="wide", initial_sidebar_state="collapsed")
 st.title("🎵 Music Genre Classification with Multiple Models")
 
 # Generate dataset
