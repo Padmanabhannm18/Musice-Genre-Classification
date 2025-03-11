@@ -12,7 +12,7 @@ def train_knn(training_features, training_labels):
 # Predict genre using KNN
 def predict_genre(audio_path, knn_model):
     rate, sig = wav.read(audio_path)
-    mfcc_feat = mfcc(sig, rate, winlen=0.020, appendEnergy=False)
+    mfcc_feat = mfcc(sig, rate, winlen=0.020, nfft=1024, appendEnergy=False)
     feature = mfcc_feat.mean(0)
     prediction = knn_model.predict([feature])[0]
     return prediction
