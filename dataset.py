@@ -13,40 +13,38 @@ test_labels = []
 
 # Generate dataset if not exists
 def generate_dataset():
-    directory123 = "Data/genres_original"
+    directory = "Data/genres_original"
     output_file = "my1.dat"
     if not os.path.exists(output_file):
         with open(output_file, "wb") as fS:
-            iS = 0
-            for folderS in os.listdir(directory123):
-                iS += 1
-                if iS == 11:
+            genre_label = 0
+            for genre in os.listdir(directory):
+                genre_label += 1
+                if genre_label > 10:
                     break
-                for fileS in os.listdir(directory123 + "/" + folderS):
+                for file in os.listdir(os.path.join(directory, genre)):
                     try:
-                        (rate, sig) = wav.read(directory123 + "/" + folderS + "/" + fileS)
+                        rate, sig = wav.read(os.path.join(directory, genre, file))
                         mfcc_feat = mfcc(sig, rate, winlen=0.020, appendEnergy=False)
-                        covariance = np.cov(np.matrix.transpose(mfcc_feat))
                         mean_matrix = mfcc_feat.mean(0)
-                        featureS = (mean_matrix, covariance, iS)
-                        pickle.dump(featureS, fS)
+                        feature_data = (mean_matrix, genre_label)
+                        pickle.dump(feature_data, fS)
                     except Exception as e:
-                        print("Got an exception:", e, "in folder:", folderS, "filename:", fileS)
+                        print(f"Error processing {file} in {genre}: {e}")
 
 # Load dataset and split into training and testing sets
 def load_dataset(filename, split=0.7):
     with open(filename, 'rb') as f:
         while True:
             try:
-                dataset.append(pickle.load(f))
+                data = pickle.load(f)
+                dataset.append(data)
             except EOFError:
                 break
-    for data in dataset:
-        features, _, label = data
+    for features, label in dataset:
         if np.random.rand() < split:
             training_features.append(features)
             training_labels.append(label)
         else:
             test_features.append(features)
             test_labels.append(label)
-
