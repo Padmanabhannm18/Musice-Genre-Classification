@@ -5,6 +5,7 @@ from models import train_knn, predict_genre
 from utils import save_uploaded_file, GENRE_LABELS
 
 # Streamlit UI
+st.set_page_config(page_title="Music Genre Classification", layout="wide", initial_sidebar_state="collapsed")
 st.title("🎵 Music Genre Classification")
 
 # Generate dataset
