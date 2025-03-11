@@ -25,7 +25,7 @@ def generate_dataset():
                 for file in os.listdir(os.path.join(directory, genre)):
                     try:
                         rate, sig = wav.read(os.path.join(directory, genre, file))
-                        mfcc_feat = mfcc(sig, rate, winlen=0.020, appendEnergy=False)
+                        mfcc_feat = mfcc(sig, rate, winlen=0.020, nfft=1024, appendEnergy=False)
                         mean_matrix = mfcc_feat.mean(0)
                         feature_data = (mean_matrix, genre_label)
                         pickle.dump(feature_data, fS)
