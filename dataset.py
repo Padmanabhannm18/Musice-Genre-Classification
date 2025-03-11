@@ -37,14 +37,14 @@ def load_dataset(filename, split=0.7):
     with open(filename, 'rb') as f:
         while True:
             try:
-                data = pickle.load(f)
-                dataset.append(data)
+                dataset.append(pickle.load(f))
             except EOFError:
                 break
-    for features, label in dataset:
+    for features, _, label in dataset:  # Unpacking correctly
         if np.random.rand() < split:
             training_features.append(features)
             training_labels.append(label)
         else:
             test_features.append(features)
             test_labels.append(label)
+
